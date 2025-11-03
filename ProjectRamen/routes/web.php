@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
 use App\Models\Product;
 
 Route::get('/', function () {
@@ -13,8 +14,10 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+
 Route::get('/order', function () {
-    return view('order.order');
+    $products = Product::all(); 
+    return view('order.order', compact('products'));
 })->middleware(['auth', 'verified'])->name('order.order');
 
 Route::middleware('auth')->group(function () {
