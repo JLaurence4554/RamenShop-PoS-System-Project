@@ -10,9 +10,10 @@ class OrderController extends Controller
     //
     public function index()
     {
+        // Fetch all products
         $products = Product::all();
 
+        // Pass them to the order view
         return view('order.order', compact('products'));
     }
-    
 }
