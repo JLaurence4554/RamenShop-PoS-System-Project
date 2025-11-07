@@ -189,95 +189,6 @@
             color: #4b5563;
         }
 
-        .receipt-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        animation: fadeIn 0.3s ease-in-out;
-    }
-
-    /* The receipt container itself */
-    .receipt {
-        background: #fff;
-        color: #111;
-        border-radius: 10px;
-        width: 360px;
-        padding: 20px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        animation: slideUp 0.35s ease;
-        font-family: 'Courier New', monospace;
-    }
-
-    .receipt h2 {
-        text-align: center;
-        font-weight: 700;
-        margin-bottom: 10px;
-        color: #111827;
-    }
-
-    .receipt p {
-        font-size: 0.9rem;
-        text-align: center;
-        color: #4b5563;
-        margin-bottom: 10px;
-    }
-
-    .receipt table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 0.9rem;
-    }
-
-    .receipt table th,
-    .receipt table td {
-        padding: 6px;
-        border-bottom: 1px solid #e5e7eb;
-        text-align: left;
-    }
-
-    .receipt .total {
-        text-align: right;
-        font-weight: bold;
-        margin-top: 12px;
-        font-size: 1rem;
-    }
-
-    .close-receipt {
-        margin-top: 15px;
-        width: 100%;
-        background: #2563eb;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: 0.2s;
-    }
-
-    .close-receipt:hover {
-        background: #1d4ed8;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    @keyframes slideUp {
-        from { transform: translateY(40px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-
     </style>
 
     <div class="page-wrapper">
@@ -316,50 +227,20 @@
 
         <!-- RIGHT: Order Detail -->
         <div class="order-section">
-                  <form method="POST" action="{{ route('save-order') }}">
-                    @csrf
-                     <h3>Order Detail:</h3>
-                     <div id="orderType" class="order-type">Select order type</div>
+            <h3>Order Detail:</h3>
+            <div id="orderType" class="order-type">Select order type</div>
 
-                     <div id="orderList" class="space-y-2"></div>
-                         <hr class="my-3 border-gray-700">
+            <div id="orderList" class="space-y-2"></div>
+            <hr class="my-3 border-gray-700">
 
-                     <div class="total-line">
-                        <span>Total:</span>
-                        <span id="orderTotal">₱0</span>
-                     </div>
+            <div class="total-line">
+                <span>Total:</span>
+                <span id="orderTotal">₱0</span>
+            </div>
 
-                     <!-- Hidden fields for JS to fill -->
-                    <input type="hidden" name="order_type" value="" id="order_type">
-                     <div id="orderItemsInputs"></div>
-                     <input type="hidden" name="total" id="order_total">
-
-                    <button type="button" id="doneBtn" class="done-btn">Done</button>
-                  </form>
-                </div>
-         </div>
-
-          <!-- Receipt Popup -->
-    <div class="receipt-overlay" id="receiptOverlay">
-      <div class="receipt" id="receiptContent">
-          <h2>🍜 Ramen Shop</h2>
-          <p>Thank you for your order!</p>
-           <table id="receiptTable">
-             <thead>
-                 <tr>
-                     <th>Item</th>
-                     <th>Qty</th>
-                     <th>Price</th>
-                 </tr>
-             </thead>
-             <tbody></tbody>
-         </table>
-         <div class="total" id="receiptTotal"></div>
-        <div class="flex gap-2 mt-3">
-        <button type="button" class="close-receipt bg-gray-500 hover:bg-gray-600" id="closeReceiptBtn">Close</button>
-        <button type="button" class="close-receipt bg-blue-600 hover:bg-blue-700" id="confirmOrderBtn">Confirm Order</button>
-      </div>
-   </div>
+            <button id="doneBtn" class="done-btn">Done</button>
+        </div>
+    </div>
 
     <script>
         const dineInBtn = document.getElementById('dineInBtn');
@@ -370,10 +251,6 @@
         const orderTotal = document.getElementById('orderTotal');
         const doneBtn = document.getElementById('doneBtn');
 
-        const confirmBtn = document.getElementById('confirmOrderBtn');
-        const orderForm = document.querySelector('.order-section form');
-
-      
         let orders = {};
         let orderType = '';
 
@@ -382,7 +259,7 @@
 
         function setOrderType(type) {
             orderType = type;
-            orderTypeDisplay.textContent = `Order Type: ${type}`;
+            orderTypeDisplay.textContent = `${type}`;
             orders = {};
             renderOrders();
         }
@@ -435,62 +312,46 @@
             if (orders[name].qty <= 0) delete orders[name];
             renderOrders();
         }
-  
-        doneBtn.addEventListener('click', (e) => {
-    e.preventDefault();
 
-    if (!orderType || Object.keys(orders).length === 0) {
-        alert('Please select order type and add items first!');
-        return;
-    }
+        doneBtn.addEventListener('click', () => {
+            if (!orderType || Object.keys(orders).length === 0) {
+                alert('Please select order type and add items first!');
+                return;
+            }
 
-    // --- Show Receipt Popup ---
-    const overlay = document.getElementById('receiptOverlay');
-    const tbody = document.querySelector('#receiptTable tbody');
-    const totalDisplay = document.getElementById('receiptTotal');
+            let total = 0;
+            let ordered = 0;
+            for (const item of Object.values(orders)) {
+                total += item.price * item.qty;
+                ordered += item.qty;
+            }
 
-    tbody.innerHTML = '';
-    let total = 0;
+            fetch("{{ route('save.sale') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({ ordered, full_salary: total })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert("Ordered Successfully!");
 
-    for (const [name, item] of Object.entries(orders)) {
-        const tr = document.createElement('tr');
-        const subtotal = item.price * item.qty;
-        tr.innerHTML = `
-            <td>${name}</td>
-            <td>${item.qty}</td>
-            <td>₱${subtotal.toFixed(2)}</td>
-        `;
-        tbody.appendChild(tr);
-        total += subtotal;
-    }
+                const query = new URLSearchParams({
+                    orders: JSON.stringify(Object.entries(orders).map(([name, item]) => ({
+                        name, qty: item.qty, price: item.price
+                    }))),
+                    total,
+                    orderType
+                }).toString();
 
-    totalDisplay.textContent = `Total: ₱${total.toFixed(2)} (${orderType})`;
-    overlay.style.display = 'flex';
+                window.location.href = `{{ route('receipt') }}?${query}`;
 
-    // Fill form data (hidden inputs)
-    document.getElementById('order_type').value = orderType;
-    document.getElementById('order_total').value = total;
-
-    const container = document.getElementById('orderItemsInputs');
-    container.innerHTML = '';
-    let i = 0;
-    for (const [name, item] of Object.entries(orders)) {
-        const fields = `
-            <input type="hidden" name="items[${i}][name]" value="${name}">
-            <input type="hidden" name="items[${i}][qty]" value="${item.qty}">
-            <input type="hidden" name="items[${i}][price]" value="${item.price}">
-        `;
-        container.insertAdjacentHTML('beforeend', fields);
-        i++;
-    }
-});
-confirmBtn.addEventListener('click', () => {
-        // Optionally hide the receipt first
-        document.getElementById('receiptOverlay').style.display = 'none';
-
-        // Submit the form
-        orderForm.submit();
-    });
-
+                orders = {};
+                renderOrders();
+            })
+            .catch(err => alert("Error saving sale: " + err));
+        });
     </script>
 </x-app-layout>

@@ -2,32 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\OrderHistory;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function store(Request $request)
+    //
+    public function index()
     {
-        // Validate form data
-        $validated = $request->validate([
-            'order_type' => 'required|string',
-            'items' => 'required|array',
-            'total' => 'required|numeric',
-        ]);
+        $products = Product::all();
 
-        // Convert the items array to a string: "Ramen:2:80,Sushi:1:50"
-        $itemsString = collect($validated['items'])->map(function ($item) {
-            return "{$item['name']}:{$item['qty']}:{$item['price']}";
-        })->implode(',');
-
-        // Save the record
-        OrderHistory::create([
-            'order_type' => $validated['order_type'],
-            'items' => $itemsString,
-            'total' => $validated['total'],
-        ]);
-
-        return redirect()->route('history.index')->with('success', 'Order saved!');
+        return view('order.order', compact('products'));
     }
+    
 }
