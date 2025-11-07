@@ -1,21 +1,20 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\SaleController;
-use App\Models\Sale;
 use App\Models\Product;
+use App\Models\OrderHistory;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', [SaleController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::get('/order', function () {
     $products = Product::all(); 
@@ -23,15 +22,6 @@ Route::get('/order', function () {
 })->middleware(['auth', 'verified'])->name('order.order');
 
 Route::middleware('auth')->group(function () {
-
-    Route::get('/order-dates', [SaleController::class, 'getOrderDates'])->name('order.dates');
-    Route::get('/sales/by-date/{date}', [SaleController::class, 'getOrdersByDate'])->name('sales.byDate');
-
-    Route::post('/save-sale', [SaleController::class, 'store'])->name('save.sale');
-
-    Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
-    Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
-    Route::post('/employees/{employee}/attendance', [EmployeeController::class, 'markAttendance'])->name('employees.attendance');
 
     //Crud routes
     Route::get('/product', [ProductController::class, 'index'])->name('product.index');
@@ -41,10 +31,37 @@ Route::middleware('auth')->group(function () {
     Route::put('/product/{product}/update', [ProductController::class, 'update'])->name('product.update');
     Route::delete('/product/{product}/delete', [ProductController::class, 'delete'])->name('product.delete');
 
+    Route::get('/history', [App\Http\Controllers\HistoryController::class, 'index'])
+         ->name('history.index');
+
     //Login & register Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+    Route::view('/about', 'about')->name('about');
 
+    Route::post('/save-order', function (Request $request) {
+    // Validate like normal form
+    $validated = $request->validate([
+        'order_type' => 'required|string',
+        'items' => 'required|array',
+        'total' => 'required|numeric',
+    ]);
+
+    // Build a readable string for items (instead of JSON)
+    $itemDescriptions = [];
+    foreach ($request->items as $item) {
+        $itemDescriptions[] = "{$item['name']} x {$item['qty']} (₱" . ($item['price'] * $item['qty']) . ")";
+    }
+
+    // Save as plain text
+    OrderHistory::create([
+        'order_type' => $request->order_type,
+        'items' => implode(', ', $itemDescriptions),
+        'total' => $request->total,
+    ]);
+
+    return redirect()->route('history.index')->with('success', 'Order saved successfully!');
+    })->name('save-order');
+});
 require __DIR__.'/auth.php';
