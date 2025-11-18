@@ -8,6 +8,8 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\AddonController;
+use App\Http\Controllers\InventoryController;
+use App\Models\InventoryItem;
 use App\Models\Sale;
 use App\Models\Product;
 
@@ -25,7 +27,16 @@ Route::get('/order', function () {
 })->middleware(['auth', 'verified'])->name('order.order');
 
 Route::middleware('auth')->group(function () {
-
+    
+    //inventory route
+    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+    Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
+    Route::put('/inventory/{item}', [InventoryController::class, 'update'])->name('inventory.update');
+    Route::delete('/inventory/{item}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
+    Route::post('/inventory/{item}/restock', [InventoryController::class, 'restock'])->name('inventory.restock');
+    Route::post('/inventory/bulk-restock', [InventoryController::class, 'bulkRestock'])->name('inventory.bulkRestock');
+    Route::get('/inventory/{item}/get', [InventoryController::class, 'getItem'])->name('inventory.get');
+    
     //receipt route
     Route::get('/receipt', function (Request $request) {
         $orders = json_decode($request->query('orders'), true);
