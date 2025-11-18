@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\AddonController;
 use App\Models\Sale;
 use App\Models\Product;
 
@@ -25,21 +26,23 @@ Route::get('/order', function () {
 
 Route::middleware('auth')->group(function () {
 
+    //receipt route
     Route::get('/receipt', function (Request $request) {
         $orders = json_decode($request->query('orders'), true);
         $total = $request->query('total');
         $orderType = $request->query('orderType');
         
-        // 👇 Important: use "Order.receipt" to match the folder structure
+        //receipt
         return view('Order.receipt', compact('orders', 'total', 'orderType'));
     })->name('receipt');
 
-
+    //history route
     Route::get('/order-dates', [SaleController::class, 'getOrderDates'])->name('order.dates');
     Route::get('/sales/by-date/{date}', [SaleController::class, 'getOrdersByDate'])->name('sales.byDate');
 
     Route::post('/save-sale', [SaleController::class, 'store'])->name('save.sale');
 
+    //Employee Route
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
     Route::post('/employees/{employee}/attendance', [EmployeeController::class, 'markAttendance'])->name('employees.attendance');

@@ -35,17 +35,18 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px 0;
         }
 
         .receipt-container {
             background-color: white;
-            width: 300px;
-            padding: 30px 16px;
-            border-radius: 8px;
+            width: 3in;
+            padding: 35px 24px;
+            border-radius: 12px;
             text-align: center;
-            box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             min-height: 480px; 
             display: flex;
             flex-direction: column;
@@ -54,37 +55,64 @@
 
         .receipt-header {
             font-weight: bold;
-            font-size: 1.46rem;
-            margin-bottom: 4px;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            line-height: 1.3;
         }
 
         .receipt-subheader {
-            font-size: 0.75rem;
-            margin-bottom: 12px;
+            font-size: 0.8rem;
+            margin-bottom: 16px;
+            line-height: 1.6;
+            color: #333;
         }
 
         .divider {
-            border-top: 1px dashed #000;
-            margin: 10px 0;
+            border-top: 2px dashed #333;
+            margin: 14px 0;
         }
 
         .receipt-info {
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
-            margin: 15px 0;
+            font-size: 0.95rem;
+            margin: 16px 0;
+            font-weight: 500;
         }
 
         .items {
             text-align: left;
             font-size: 0.9rem;
-            margin: 0 0 30px 0;
+            margin: 0 0 24px 0;
         }
 
-        .items div {
+        .item-row {
+            margin-bottom: 14px;
+            padding: 8px;
+            background-color: #f9fafb;
+            border-radius: 6px;
+        }
+
+        .item-main {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .item-customization {
+            font-size: 0.78rem;
+            color: #555;
+            margin-left: 8px;
+            line-height: 1.5;
+            padding-left: 12px;
+            border-left: 2px solid #d1d5db;
+        }
+
+        .customization-line {
+            margin-bottom: 3px;
         }
 
         .total {
@@ -99,16 +127,17 @@
         }
 
         .receipt-image img {
-            width: 80%;
-            max-width: 200px;
-            margin: 15px 0 0 0;
+            width: 70%;
+            max-width: 180px;
+            margin: 15px 0 10px 0;
             height: auto;
-            opacity: 0.9;
+            opacity: 1;
         }
 
         .footer {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: bold;
+            margin-top: 8px;
         }
 
         .button-group {
@@ -123,6 +152,7 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
 
         .btn-cancel {
@@ -152,7 +182,7 @@
             </div>
 
             <div class="divider"></div>
-            <div style="font-size: 1.7rem; font-weight: bold; margin-bottom: 6px;">{{ request('orderType') }}</div>
+            <div style="font-size: 1.9rem; font-weight: bold; margin-bottom: 6px; letter-spacing: 2px;">{{ request('orderType') }}</div>
             <div class="divider"></div>
 
             <div class="receipt-info">
@@ -163,22 +193,63 @@
             <div class="divider"></div>
 
             <div class="items">
-                <div><strong>Item</strong> <strong>Peice</strong></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 700; font-size: 0.95rem; border-bottom: 2px solid #333; padding-bottom: 6px;">
+                    <strong>Item</strong>
+                    <strong>Price</strong>
+                </div>
+                
                 @php
                     $orders = json_decode(request('orders'), true);
                 @endphp
+                
                 @foreach ($orders as $order)
-                    <div>
-                        <span>{{ $order['name'] }} x{{ $order['qty'] }}</span>
-                        <span>₱{{ number_format($order['price'] * $order['qty'], 2) }}</span>
+                    <div class="item-row">
+                        <div class="item-main">
+                            <span>{{ $order['name'] }} x{{ $order['qty'] }}</span>
+                            <span>₱{{ number_format($order['totalPrice'] * $order['qty'], 2) }}</span>
+                        </div>
+                        
+                        @if(isset($order['customization']))
+                            <div class="item-customization">
+                                <div class="customization-line">
+                                    Spicy: Lvl {{ $order['customization']['spicyLevel'] }}
+                                </div>
+                                <div class="customization-line">
+                                    Garlic: {{ ucfirst($order['customization']['garlicLevel']) }}
+                                </div>
+                                <div class="customization-line">
+                                    Onion: {{ ucfirst($order['customization']['onionLevel']) }}
+                                </div>
+                                
+                                @if(isset($order['customization']['addOns']) && count($order['customization']['addOns']) > 0)
+                                    <div class="customization-line">
+                                        Add-ons:
+                                        @php
+                                            $addOnsNames = [
+                                                'egg' => 'Soft-Boiled Egg',
+                                                'chashu' => 'Extra Chashu',
+                                                'nori' => 'Extra Nori',
+                                                'corn' => 'Corn',
+                                                'bamboo' => 'Bamboo Shoots',
+                                                'veggie' => 'Extra Vegetables'
+                                            ];
+                                            $addonsList = array_map(function($addon) use ($addOnsNames) {
+                                                return $addOnsNames[$addon['id']] ?? $addon['id'];
+                                            }, $order['customization']['addOns']);
+                                        @endphp
+                                        {{ implode(', ', $addonsList) }}
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
                     </div>
                 @endforeach
             </div>
 
             <div class="divider"></div>
 
-            <div class="receipt-info">
-                <strong>Total</strong>
+            <div class="receipt-info" style="background-color: #f3f4f6; padding: 12px; border-radius: 8px; font-size: 1.1rem;">
+                <strong>TOTAL</strong>
                 <strong>₱{{ number_format(request('total'), 2) }}</strong>
             </div>
         </div>
@@ -197,15 +268,24 @@
 
     <script>
         function cancelReceipt() {
-            window.location.href = "{{ route('order.order') }}";
+            if (confirm('Are you sure you want to cancel this receipt?')) {
+                window.location.href = "{{ route('order.order') }}";
+            }
         }
 
         function doneAndPrint() {
+            // Automatically print
             window.print();
+            
+            // Redirect after print dialog closes or after a short delay
             setTimeout(() => {
                 window.location.href = "{{ route('order.order') }}";
-            }, 1500);
+            }, 1000);
         }
+
+        // Optional: Auto-print on page load
+        // Uncomment the line below if you want the receipt to print immediately when the page loads
+        // window.onload = function() { window.print(); };
     </script>
 
 </body>
