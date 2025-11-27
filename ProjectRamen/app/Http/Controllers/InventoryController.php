@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\InventoryItem;
+use App\Models\Addon;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
@@ -35,6 +36,7 @@ class InventoryController extends Controller
         }
 
         $items = $query->orderBy('name')->get();
+        $addons = Addon::with('inventoryItem')->get();
 
         // Calculate stats
         $stats = [
@@ -44,7 +46,7 @@ class InventoryController extends Controller
             'total_value' => InventoryItem::sum(\DB::raw('quantity * unit_price'))
         ];
 
-        return view('inventory.index', compact('items', 'stats'));
+        return view('inventory.index', compact('items', 'stats', 'addons'));
     }
 
     public function store(Request $request)

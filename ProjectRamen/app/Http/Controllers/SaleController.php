@@ -39,15 +39,19 @@ class SaleController extends Controller
 
     public function getOrderDates()
     {
-        return Sale::selectRaw('DATE(created_at) as date')
-            ->groupBy('date')
-            ->orderByDesc('date')
-            ->get();
+        return response()->json(
+            Sale::selectRaw('DATE(created_at) as date')
+                ->groupBy('date')
+                ->orderByDesc('date')
+                ->get()
+        );
     }
 
     public function getOrdersByDate($date)
     {
-        return Sale::whereDate('created_at', $date)->get();
+        return response()->json(
+            Sale::whereDate('created_at', $date)->get()
+        );
     }
 
 }

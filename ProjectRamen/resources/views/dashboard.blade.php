@@ -501,9 +501,11 @@
             </div>
         </div>
 
+        @if(Auth::user()->role !== 'cashier')
         <h1 class="history-title">Order History</h1>
         <div class="history-container">
-            <!-- Top Sales Sidebar -->
+            <!-- Top Sales Sidebar - Admin Only -->
+            @if(Auth::user()->role !== 'cashier')
             <div class="top-sales-sidebar" id="topSalesSidebar">
                 <div class="top-sales-title">
                     <span>Top Sales Days</span>
@@ -512,6 +514,7 @@
                     <div class="loading">Loading top sales...</div>
                 </div>
             </div>
+            @endif
 
             <!-- Main History Content -->
             <div class="history-content">
@@ -538,6 +541,7 @@
                         <button id="backToDates">← Back to Dates</button>
                     </div>
                 </div>
+                </div>
             </div>
         </div>
     </div>
@@ -561,6 +565,11 @@
             // Fetch all unique order dates
             try {
                 const res = await fetch("{{ url('order-dates') }}");
+                
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                
                 const dates = await res.json();
 
                 orderDatesContainer.innerHTML = '';
@@ -568,13 +577,20 @@
                 // Populate history list
                 if (dates.length === 0) {
                     orderDatesContainer.innerHTML = `<div class="no-data">📭 No order history yet.</div>`;
-                    topSalesContent.innerHTML = '<div class="no-top-sales">No sales data yet</div>';
+                    if (topSalesContent) {
+                        topSalesContent.innerHTML = '<div class="no-top-sales">No sales data yet</div>';
+                    }
                     return;
                 }
 
                 // Fetch detailed stats for each date
                 for (const d of dates) {
                     const statsRes = await fetch(`/sales/by-date/${d.date}`);
+                    
+                    if (!statsRes.ok) {
+                        throw new Error(`Failed to fetch sales for ${d.date}`);
+                    }
+                    
                     const sales = await statsRes.json();
                     
                     const totalOrdered = sales.reduce((sum, sale) => sum + parseInt(sale.ordered), 0);
@@ -627,9 +643,11 @@
                 displayTopSales();
 
             } catch (error) {
-                orderDatesContainer.innerHTML = '<div class="no-data">❌ Error loading order history</div>';
-                topSalesContent.innerHTML = '<div class="no-top-sales">Error loading top sales</div>';
-                console.error('Error:', error);
+                console.error('Error details:', error);
+                orderDatesContainer.innerHTML = '<div class="no-data">❌ Error loading order history: ' + error.message + '</div>';
+                if (topSalesContent) {
+                    topSalesContent.innerHTML = '<div class="no-top-sales">Error loading top sales</div>';
+                }
             }
 
             function displayTopSales() {
@@ -728,4 +746,5 @@
             });
         });
     </script>
+    @endif
 </x-app-layout>

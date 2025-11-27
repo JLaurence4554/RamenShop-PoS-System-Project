@@ -225,16 +225,8 @@
                                     <div class="customization-line">
                                         Add-ons:
                                         @php
-                                            $addOnsNames = [
-                                                'egg' => 'Soft-Boiled Egg',
-                                                'chashu' => 'Extra Chashu',
-                                                'nori' => 'Extra Nori',
-                                                'corn' => 'Corn',
-                                                'bamboo' => 'Bamboo Shoots',
-                                                'veggie' => 'Extra Vegetables'
-                                            ];
-                                            $addonsList = array_map(function($addon) use ($addOnsNames) {
-                                                return $addOnsNames[$addon['id']] ?? $addon['id'];
+                                            $addonsList = array_map(function($addon) {
+                                                return $addon['name'] ?? 'Unknown';
                                             }, $order['customization']['addOns']);
                                         @endphp
                                         {{ implode(', ', $addonsList) }}

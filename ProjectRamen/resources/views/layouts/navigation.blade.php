@@ -3,11 +3,9 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
-                <!-- Logo -->
+                <!-- Logo (text-only) -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                    </a>
+                    <a href="{{ route('dashboard') }}" class="font-extrabold text-lg text-amber-600 dark:text-amber-300">RamenSHOP</a>
                 </div>
 
                 <!-- Navigation Links -->
@@ -17,29 +15,25 @@
                     </x-nav-link>
                 </div>
             
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('order.order')" :active="request()->routeIs('order.order')">
-                        {{ __('Order') }}
-                    </x-nav-link>
-                </div>
+                @if(Auth::user()->role === 'cashier')
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('order.order')" :active="request()->routeIs('order.order')">
+                            {{ __('Order') }}
+                        </x-nav-link>
+                    </div>
+                @else
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('product.index')" :active="request()->routeIs('product.index')">
+                            {{ __('Product List') }}
+                        </x-nav-link>
+                    </div>
 
-            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('product.index')" :active="request()->routeIs('product.index')">
-                        {{ __('Product List') }}
-                    </x-nav-link>
-                </div>
-                
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('employees.index')" :active="request()->routeIs('employees.index')">
-                        {{ __('Employee') }}
-                    </x-nav-link>
-                </div>
-
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('inventory.index')" :active="request()->routeIs('inventory.index')">
-                        {{ __('Kitchen Inventory') }}
-                    </x-nav-link>
-                </div>
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('inventory.index')" :active="request()->routeIs('inventory.index')">
+                            {{ __('Kitchen Inventory') }}
+                        </x-nav-link>
+                    </div>
+                @endif
             </div>
 
             <!-- Settings Dropdown -->
@@ -94,6 +88,21 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            @if(Auth::user()->role === 'cashier')
+                <x-responsive-nav-link :href="route('order.order')" :active="request()->routeIs('order.order')">
+                    {{ __('Order') }}
+                </x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('product.index')" :active="request()->routeIs('product.index')">
+                    {{ __('Product List') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('employees.index')" :active="request()->routeIs('employees.index')">
+                    {{ __('Employee') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('inventory.index')" :active="request()->routeIs('inventory.index')">
+                    {{ __('Kitchen Inventory') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

@@ -707,18 +707,14 @@
             <div class="customization-section">
                 <label>➕ Add-ons (Optional)</label>
                 <div class="addon-grid">
-                    <button class="addon-btn" data-addon="egg" data-price="20">
-                        <div class="addon-name"> Ajitama Egg</div>
-                        <div class="addon-price">+₱25.00</div>
+                    @forelse($addons ?? [] as $addon)
+                    <button class="addon-btn" data-addon-id="{{ $addon->id }}" data-addon="{{ strtolower(str_replace(' ', '-', $addon->name)) }}" data-price="{{ $addon->price }}">
+                        <div class="addon-name">{{ $addon->name }}</div>
+                        <div class="addon-price">+₱{{ number_format($addon->price, 2) }}</div>
                     </button>
-                    <button class="addon-btn" data-addon="nori" data-price="15">
-                        <div class="addon-name"> Nori Seaweed</div>
-                        <div class="addon-price">+₱20.00</div>
-                    </button>
-                    <button class="addon-btn" data-addon="corn" data-price="15">
-                        <div class="addon-name"> Pork Chashu(3 pcs)</div>
-                        <div class="addon-price">+₱65.00</div>
-                    </button>
+                    @empty
+                    <p style="color: #999;">No add-ons available</p>
+                    @endforelse
                 </div>
             </div>
 
@@ -759,14 +755,12 @@
             addOns: []
         };
 
-        // Add-ons data
+        // Add-ons data from database
         const addOnsData = {
-            egg: { name: 'Soft-Boiled Egg', price: 20 },
-            chashu: { name: 'Extra Chashu', price: 50 },
-            nori: { name: 'Extra Nori', price: 15 },
-            corn: { name: 'Corn', price: 15 },
-            bamboo: { name: 'Bamboo Shoots', price: 20 },
-            veggie: { name: 'Extra Vegetables', price: 25 }
+            @forelse($addons ?? [] as $addon)
+            '{{ $addon->id }}': { name: '{{ $addon->name }}', price: {{ $addon->price }} },
+            @empty
+            @endforelse
         };
 
         dineInBtn.addEventListener('click', () => setOrderType('Dine In', dineInBtn));
@@ -864,7 +858,7 @@
         // Add-on buttons
         document.querySelectorAll('.addon-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const addonId = btn.dataset.addon;
+                const addonId = btn.dataset.addonId;
                 const addonPrice = parseFloat(btn.dataset.price);
                 
                 if (btn.classList.contains('active')) {
@@ -1005,7 +999,8 @@
                     product_id: item.product_id,
                     quantity: item.qty,
                     price: item.basePrice,
-                    subtotal: item.totalPrice * item.qty
+                    subtotal: item.totalPrice * item.qty,
+                    addons: item.customization.addOns || []
                 });
             });
 
@@ -1044,7 +1039,16 @@
                         qty: item.qty,
                         price: item.basePrice,
                         totalPrice: item.totalPrice,
-                        customization: item.customization
+                        customization: {
+                            spicyLevel: item.customization.spicyLevel,
+                            garlicLevel: item.customization.garlicLevel,
+                            onionLevel: item.customization.onionLevel,
+                            addOns: item.customization.addOns.map(addon => ({
+                                id: addon.id,
+                                name: addOnsData[addon.id].name,
+                                price: addon.price
+                            }))
+                        }
                     }))),
                     total,
                     orderType

@@ -387,6 +387,162 @@
             font-size: 4rem;
             margin-bottom: 16px;
         }
+
+        .tabs-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0;
+        }
+
+        .tab-btn {
+            padding: 14px 24px;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+            top: 2px;
+        }
+
+        .tab-btn:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .tab-btn.active {
+            color: white;
+            border-bottom-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .addon-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .addon-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .addon-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .addon-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .addon-table thead {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .addon-table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .addon-table tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.2s;
+        }
+
+        .addon-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .addon-table td {
+            padding: 12px;
+        }
+
+        .addon-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .addon-btn-icon {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .addon-btn-edit {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .addon-btn-edit:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .addon-btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .addon-btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .no-addons {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .no-addons-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
     </style>
 
     <div class="page-wrapper">
@@ -426,7 +582,19 @@
             </div>
         </div>
 
-        <!-- Stats Grid -->
+        <!-- Tabs Navigation -->
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('inventory')">
+                📦 Inventory Management
+            </button>
+            <button class="tab-btn" onclick="switchTab('addons')">
+                🍽️ Add-ons Management
+            </button>
+        </div>
+
+        <!-- Inventory Tab Content -->
+        <div id="inventory" class="tab-content active">
+            <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-header">
@@ -515,10 +683,10 @@
                         </td>
                         <td style="text-transform: capitalize;">{{ $item->category }}</td>
                         <td>
-                            <span class="quantity-display">{{ number_format($item->quantity, 2) }}</span>
+                            <span class="quantity-display">{{ rtrim(rtrim(number_format($item->quantity, 2, '.', ''), '0'), '.') }}</span>
                         </td>
                         <td>{{ $item->unit }}</td>
-                        <td>{{ number_format($item->min_stock, 2) }}</td>
+                        <td>{{ rtrim(rtrim(number_format($item->min_stock, 2, '.', ''), '0'), '.') }}</td>
                         <td>₱{{ number_format($item->unit_price, 2) }}</td>
                         <td style="font-weight: 600; color: #10b981;">₱{{ number_format($item->total_value, 2) }}</td>
                         <td>
@@ -555,7 +723,53 @@
                 </tbody>
             </table>
         </div>
-    </div>
+        </div><!-- Close inventory tab-content -->
+
+        <!-- Add-ons Tab Content -->
+        <div id="addons" class="tab-content">
+            <!-- Add-ons Management Section -->
+            <div style="padding: 24px; background: rgba(255, 255, 255, 0.05); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid rgba(255, 255, 255, 0.1);">
+                    <h3 style="font-size: 1.3rem; font-weight: 700;">🍽️ Manage Add-ons</h3>
+                    <button class="btn-primary" id="addAddonBtn" style="padding: 10px 20px; font-size: 0.95rem;">+ Add New Add-on</button>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid rgba(255, 255, 255, 0.2);">
+                            <th style="padding: 12px; text-align: left;">Name</th>
+                            <th style="padding: 12px; text-align: left;">Price (₱)</th>
+                            <th style="padding: 12px; text-align: left;">Linked Inventory</th>
+                            <th style="padding: 12px; text-align: left;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="addonsTableBody">
+                        @forelse($addons as $addon)
+                        <tr data-addon-id="{{ $addon->id }}" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <td style="padding: 12px;">{{ $addon->name }}</td>
+                            <td style="padding: 12px;">{{ number_format($addon->price, 2) }}</td>
+                            <td style="padding: 12px;">{{ $addon->inventoryItem ? $addon->inventoryItem->name . ' (' . $addon->inventoryItem->unit . ')' : 'None' }}</td>
+                            <td style="padding: 12px;">
+                                <div class="action-buttons-cell">
+                                    <button class="btn-icon edit" onclick="editAddon({{ $addon->id }})" title="Edit">
+                                        ✏️
+                                    </button>
+                                    <button class="btn-icon delete" onclick="deleteAddon({{ $addon->id }})" title="Delete">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" style="padding: 20px; text-align: center; color: #999;">No add-ons yet. Create one to get started!</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div><!-- Close addons tab-content -->
+    </div><!-- Close main container -->
 
     <!-- Add/Edit Item Modal -->
     <div id="itemModal" class="modal-overlay">
@@ -670,10 +884,157 @@
         </div>
     </div>
 
+    <!-- Add/Edit Add-on Modal -->
+    <div id="addonModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="addonModalTitle">Add New Add-on</h2>
+                <button class="close-btn" id="closeAddonModalBtn">&times;</button>
+            </div>
+
+            <form id="addonForm">
+                @csrf
+                <input type="hidden" id="addonId">
+
+                <div class="form-group">
+                    <label>Add-on Name *</label>
+                    <input type="text" class="form-input" id="addonName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Price (₱) *</label>
+                    <input type="number" class="form-input" id="addonPrice" step="0.01" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Link to Inventory Item (Optional)</label>
+                    <select class="form-input" id="addonInventoryItem">
+                        <option value="">-- Select Inventory Item --</option>
+                        @foreach($items as $item)
+                        <option value="{{ $item->id }}">{{ $item->name }} ({{ $item->unit }})</option>
+                        @endforeach
+                    </select>
+                    <small style="display: block; margin-top: 6px; color: rgba(255, 255, 255, 0.6);">Selecting an inventory item will deduct from it when this add-on is ordered</small>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="cancelAddonBtn">Cancel</button>
+                    <button type="submit" class="btn-submit">Save Add-on</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        const addonModal = document.getElementById('addonModal');
+
+        // Open add item modal
+        document.getElementById('addAddonBtn').addEventListener('click', () => {
+            document.getElementById('addonModalTitle').textContent = 'Add New Add-on';
+            document.getElementById('addonForm').reset();
+            document.getElementById('addonId').value = '';
+            addonModal.classList.add('active');
+        });
+
+        // Close addon modal
+        function closeAddonModal() {
+            addonModal.classList.remove('active');
+        }
+
+        document.getElementById('closeAddonModalBtn').addEventListener('click', closeAddonModal);
+        document.getElementById('cancelAddonBtn').addEventListener('click', closeAddonModal);
+
+        document.getElementById('addonForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const addonId = document.getElementById('addonId').value;
+            const url = addonId ? `/addons/${addonId}` : '/addons';
+            const method = addonId ? 'PUT' : 'POST';
+
+            const data = {
+                name: document.getElementById('addonName').value,
+                price: document.getElementById('addonPrice').value,
+                inventory_item_id: document.getElementById('addonInventoryItem').value || null
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+
+        async function editAddon(id) {
+            try {
+                const response = await fetch(`/addons/${id}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const addon = result.addon;
+                    document.getElementById('addonModalTitle').textContent = 'Edit Add-on';
+                    document.getElementById('addonId').value = addon.id;
+                    document.getElementById('addonName').value = addon.name;
+                    document.getElementById('addonPrice').value = addon.price;
+                    document.getElementById('addonInventoryItem').value = addon.inventory_item_id || '';
+
+                    addonModal.classList.add('active');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function deleteAddon(id) {
+            if (!confirm('Are you sure you want to delete this add-on?')) return;
+
+            try {
+                const response = await fetch(`/addons/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    window.location.reload();
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Close addon modal when clicking outside
+        addonModal.addEventListener('click', (e) => {
+            if (e.target === addonModal) closeAddonModal();
+        });
+
         const modal = document.getElementById('itemModal');
         const restockModal = document.getElementById('restockModal');
         let currentRestockItem = null;
+
+        function formatNumberToDisplay(num) {
+            // Keep two decimals of precision but remove trailing zeros (e.g. 6.00 -> "6", 6.50 -> "6.5")
+            return Number(parseFloat(num).toFixed(2)).toString();
+        }
 
         // Open add item modal
         document.getElementById('addItemBtn').addEventListener('click', () => {
@@ -747,10 +1108,10 @@
                     document.getElementById('itemId').value = item.id;
                     document.getElementById('itemName').value = item.name;
                     document.getElementById('itemCategory').value = item.category;
-                    document.getElementById('itemQuantity').value = item.quantity;
+                    document.getElementById('itemQuantity').value = formatNumberToDisplay(item.quantity);
                     document.getElementById('itemUnit').value = item.unit;
-                    document.getElementById('itemMinStock').value = item.min_stock;
-                    document.getElementById('itemPrice').value = item.unit_price;
+                    document.getElementById('itemMinStock').value = formatNumberToDisplay(item.min_stock);
+                    document.getElementById('itemPrice').value = formatNumberToDisplay(item.unit_price);
                     document.getElementById('itemSupplier').value = item.supplier || '';
                     
                     modal.classList.add('active');
@@ -792,9 +1153,9 @@
                 if (result.success) {
                     currentRestockItem = result.item;
                     document.getElementById('restockItemId').value = id;
-                    document.getElementById('currentQuantity').value = `${parseFloat(currentRestockItem.quantity).toFixed(2)} ${currentRestockItem.unit}`;
+                    document.getElementById('currentQuantity').value = `${formatNumberToDisplay(currentRestockItem.quantity)} ${currentRestockItem.unit}`;
                     document.getElementById('addQuantity').value = '';
-                    document.getElementById('newTotal').value = `${parseFloat(currentRestockItem.quantity).toFixed(2)} ${currentRestockItem.unit}`;
+                    document.getElementById('newTotal').value = `${formatNumberToDisplay(currentRestockItem.quantity)} ${currentRestockItem.unit}`;
                     
                     restockModal.classList.add('active');
                 }
@@ -809,7 +1170,7 @@
 
             const addQty = parseFloat(e.target.value) || 0;
             const newTotal = parseFloat(currentRestockItem.quantity) + addQty;
-            document.getElementById('newTotal').value = `${newTotal.toFixed(2)} ${currentRestockItem.unit}`;
+            document.getElementById('newTotal').value = `${formatNumberToDisplay(newTotal)} ${currentRestockItem.unit}`;
         });
 
         // Submit restock form
@@ -905,5 +1266,29 @@
         restockModal.addEventListener('click', (e) => {
             if (e.target === restockModal) closeModals();
         });
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show the selected tab content
+            const selectedTab = document.getElementById(tabName);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+
+            // Mark the clicked button as active
+            event.target.classList.add('active');
+        }
     </script>
 </x-app-layout>
