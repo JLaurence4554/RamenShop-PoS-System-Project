@@ -608,6 +608,7 @@
             @foreach ($products as $product)
                 <button 
                     class="product-card"
+                    data-id="{{ $product->id }}"
                     data-name="{{ $product->name }}"
                     data-price="{{ $product->price }}">
                     
@@ -793,6 +794,7 @@
                 }
 
                 currentProduct = {
+                    id: parseInt(btn.dataset.id),
                     name: btn.dataset.name,
                     price: parseFloat(btn.dataset.price)
                 };
@@ -888,6 +890,7 @@
         confirmBtn.addEventListener('click', () => {
             const orderItem = {
                 id: Date.now(),
+                product_id: currentProduct.id,
                 name: currentProduct.name,
                 basePrice: currentProduct.price,
                 customization: { ...currentCustomization, addOns: [...currentCustomization.addOns] },
@@ -993,22 +996,47 @@
 
             let total = 0;
             let ordered = 0;
+            const items = [];
+            
             orders.forEach(item => {
                 total += item.totalPrice * item.qty;
                 ordered += item.qty;
+                items.push({
+                    product_id: item.product_id,
+                    quantity: item.qty,
+                    price: item.basePrice,
+                    subtotal: item.totalPrice * item.qty
+                });
             });
 
-            fetch("{{ route('save.sale') }}", {
+            // First, deduct inventory
+            fetch("{{ route('orders.store') }}", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 },
-                body: JSON.stringify({ ordered, full_salary: total })
+                body: JSON.stringify({ items, total })
             })
             .then(res => res.json())
             .then(data => {
-                alert("Order placed successfully!");
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to process order');
+                }
+
+                // Then save the sale
+                return fetch("{{ route('save.sale') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({ ordered, full_salary: total })
+                });
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert("Order placed successfully! Inventory has been updated.");
 
                 const query = new URLSearchParams({
                     orders: JSON.stringify(orders.map(item => ({
@@ -1027,7 +1055,7 @@
                 orders = [];
                 renderOrders();
             })
-            .catch(err => alert("Error saving order: " + err));
+            .catch(err => alert("Error: " + err.message));
         });
 
         // Close modal when clicking outside

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductRecipeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SaleController;
@@ -37,6 +38,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/inventory/bulk-restock', [InventoryController::class, 'bulkRestock'])->name('inventory.bulkRestock');
     Route::get('/inventory/{item}/get', [InventoryController::class, 'getItem'])->name('inventory.get');
     
+    //order routes
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    
     //receipt route
     Route::get('/receipt', function (Request $request) {
         $orders = json_decode($request->query('orders'), true);
@@ -65,6 +69,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/product/{product}/edit', [ProductController::class, 'edit'])->name('product.edit');
     Route::put('/product/{product}/update', [ProductController::class, 'update'])->name('product.update');
     Route::delete('/product/{product}/delete', [ProductController::class, 'delete'])->name('product.delete');
+
+    //Product Recipe Routes (manage ingredients for products)
+    Route::get('/product/{product}/recipes', [ProductRecipeController::class, 'index'])->name('products.recipes.index');
+    Route::get('/product/{product}/recipes/create', [ProductRecipeController::class, 'create'])->name('products.recipes.create');
+    Route::post('/product/{product}/recipes', [ProductRecipeController::class, 'store'])->name('products.recipes.store');
+    Route::get('/product/{product}/recipes/{recipe}/edit', [ProductRecipeController::class, 'edit'])->name('products.recipes.edit');
+    Route::put('/product/{product}/recipes/{recipe}', [ProductRecipeController::class, 'update'])->name('products.recipes.update');
+    Route::delete('/product/{product}/recipes/{recipe}', [ProductRecipeController::class, 'destroy'])->name('products.recipes.destroy');
 
     //Login & register Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

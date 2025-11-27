@@ -409,6 +409,11 @@
                             <td>{{ $product->description }}</td>
                             <td class="price-cell">₱{{ number_format($product->price, 2) }}</td>
                             <td>
+                                <a href="{{ route('products.recipes.index', $product) }}" 
+                                   class="btn-edit" 
+                                   style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); margin-right: 5px;">
+                                    Recipes
+                                </a>
                                 <button 
                                     class="btn-edit" 
                                     onclick="openEditModal({{ $product->id }}, '{{ addslashes($product->name) }}', '{{ addslashes($product->description) }}', {{ $product->price }}, '{{ $product->image }}')">

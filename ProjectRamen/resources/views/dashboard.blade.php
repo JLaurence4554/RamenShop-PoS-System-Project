@@ -89,7 +89,8 @@
         .history-container {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
+            gap: 30px;
             background-color: #4B5563;
             border-radius: 16px;
             padding: 40px 60px;
@@ -99,8 +100,116 @@
         }
 
         .history-content {
-            width: 100%;
+            flex: 1;
             text-align: center;
+        }
+
+        .top-sales-sidebar {
+            width: 320px;
+            background: linear-gradient(135deg, #2044a8ff 0%, #000000ff 100%);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            position: sticky;
+            top: 20px;
+        }
+
+        .top-sales-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .top-sales-trophy {
+            font-size: 1.8rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .top-sale-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .top-sale-rank {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .top-sale-rank.first {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            font-size: 1.2rem;
+        }
+
+        .top-sale-date {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #fef3c7;
+        }
+
+        .top-sale-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .top-sale-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .top-sale-stat-label {
+            color: #e0e7ff;
+            opacity: 0.9;
+        }
+
+        .top-sale-stat-value {
+            font-weight: 700;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .top-sale-revenue {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fef3c7;
+        }
+
+        .no-top-sales {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
         }
 
         .history-title {
@@ -111,26 +220,50 @@
         }
 
         #orderDates {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             width: 100%;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
         }
 
-        .date-card {
+        /* Custom scrollbar */
+        #orderDates::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #orderDates::-webkit-scrollbar-track {
+            background: #374151;
+            border-radius: 4px;
+        }
+
+        #orderDates::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        #orderDates::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        .date-list-item {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-size: 1.2rem;
             color: #fff;
-            padding: 24px;
+            padding: 20px 24px;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             position: relative;
             overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .date-card::before {
+        .date-list-item::before {
             content: '';
             position: absolute;
             top: 0;
@@ -141,43 +274,51 @@
             transition: left 0.5s;
         }
 
-        .date-card:hover::before {
+        .date-list-item:hover::before {
             left: 100%;
         }
 
-        .date-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        .date-list-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
         }
 
-        .date-card-date {
-            font-weight: 700;
-            font-size: 1.3rem;
-            margin-bottom: 8px;
-        }
-
-        .date-card-stats {
+        .date-list-left {
             display: flex;
-            justify-content: space-between;
-            margin-top: 12px;
-            font-size: 0.9rem;
-            opacity: 0.95;
+            align-items: center;
+            gap: 16px;
         }
 
-        .date-card-stat {
+        .date-list-icon {
+            font-size: 2rem;
+        }
+
+        .date-list-date {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .date-list-right {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .date-list-stat {
             display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 4px;
         }
 
-        .date-card-stat-label {
-            font-size: 0.75rem;
-            opacity: 0.8;
+        .date-list-stat-label {
+            font-size: 0.7rem;
+            opacity: 0.85;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .date-card-stat-value {
+        .date-list-stat-value {
             font-weight: 700;
             font-size: 1.1rem;
         }
@@ -317,8 +458,21 @@
             .sales-divider {
                 display: none;
             }
-            #orderDates {
-                grid-template-columns: 1fr;
+            .history-container {
+                flex-direction: column;
+            }
+            .top-sales-sidebar {
+                width: 100%;
+                position: static;
+            }
+            .date-list-item {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+            .date-list-right {
+                width: 100%;
+                justify-content: space-around;
             }
             .day-summary {
                 grid-template-columns: 1fr;
@@ -347,8 +501,19 @@
             </div>
         </div>
 
-        <h1 class="history-title">📊 Order History</h1>
+        <h1 class="history-title">Order History</h1>
         <div class="history-container">
+            <!-- Top Sales Sidebar -->
+            <div class="top-sales-sidebar" id="topSalesSidebar">
+                <div class="top-sales-title">
+                    <span>Top Sales Days</span>
+                </div>
+                <div id="topSalesContent">
+                    <div class="loading">Loading top sales...</div>
+                </div>
+            </div>
+
+            <!-- Main History Content -->
             <div class="history-content">
                 <div id="orderDates" class="order-dates"></div>
 
@@ -385,9 +550,10 @@
             const daySummary = document.getElementById('daySummary');
             const ordersTableBody = document.querySelector('#ordersTable tbody');
             const backToDatesBtn = document.getElementById('backToDates');
-            const exportBtn = document.getElementById('exportBtn');
+            const topSalesContent = document.getElementById('topSalesContent');
 
             let currentDateData = null;
+            let allDatesData = [];
 
             // Show loading
             orderDatesContainer.innerHTML = '<div class="loading">Loading order history...</div>';
@@ -399,9 +565,10 @@
 
                 orderDatesContainer.innerHTML = '';
 
-                // Populate history cards
+                // Populate history list
                 if (dates.length === 0) {
                     orderDatesContainer.innerHTML = `<div class="no-data">📭 No order history yet.</div>`;
+                    topSalesContent.innerHTML = '<div class="no-top-sales">No sales data yet</div>';
                     return;
                 }
 
@@ -414,6 +581,14 @@
                     const totalSalary = sales.reduce((sum, sale) => sum + parseFloat(sale.full_salary), 0);
                     const totalTransactions = sales.length;
 
+                    // Store data for top sales calculation
+                    allDatesData.push({
+                        date: d.date,
+                        totalOrdered,
+                        totalSalary,
+                        totalTransactions
+                    });
+
                     const div = document.createElement('div');
                     const formatted = new Date(d.date).toLocaleDateString('en-US', { 
                         weekday: 'short',
@@ -422,21 +597,24 @@
                         year: 'numeric' 
                     });
                     
-                    div.className = 'date-card';
+                    div.className = 'date-list-item';
                     div.innerHTML = `
-                        <div class="date-card-date">📅 ${formatted}</div>
-                        <div class="date-card-stats">
-                            <div class="date-card-stat">
-                                <span class="date-card-stat-label">Transactions</span>
-                                <span class="date-card-stat-value">${totalTransactions}</span>
+                        <div class="date-list-left">
+                            <span class="date-list-icon">📅</span>
+                            <span class="date-list-date">${formatted}</span>
+                        </div>
+                        <div class="date-list-right">
+                            <div class="date-list-stat">
+                                <span class="date-list-stat-label">Transactions</span>
+                                <span class="date-list-stat-value">${totalTransactions}</span>
                             </div>
-                            <div class="date-card-stat">
-                                <span class="date-card-stat-label">Items</span>
-                                <span class="date-card-stat-value">${totalOrdered}</span>
+                            <div class="date-list-stat">
+                                <span class="date-list-stat-label">Items</span>
+                                <span class="date-list-stat-value">${totalOrdered}</span>
                             </div>
-                            <div class="date-card-stat">
-                                <span class="date-card-stat-label">Revenue</span>
-                                <span class="date-card-stat-value">₱${totalSalary.toFixed(0)}</span>
+                            <div class="date-list-stat">
+                                <span class="date-list-stat-label">Revenue</span>
+                                <span class="date-list-stat-value">₱${totalSalary.toFixed(0)}</span>
                             </div>
                         </div>
                     `;
@@ -444,9 +622,55 @@
                     div.addEventListener('click', () => showOrdersForDate(d.date, formatted, sales));
                     orderDatesContainer.appendChild(div);
                 }
+
+                // Display Top Sales
+                displayTopSales();
+
             } catch (error) {
                 orderDatesContainer.innerHTML = '<div class="no-data">❌ Error loading order history</div>';
+                topSalesContent.innerHTML = '<div class="no-top-sales">Error loading top sales</div>';
                 console.error('Error:', error);
+            }
+
+            function displayTopSales() {
+                // Sort by revenue and get top 5
+                const topSales = [...allDatesData]
+                    .sort((a, b) => b.totalSalary - a.totalSalary)
+                    .slice(0, 5);
+
+                topSalesContent.innerHTML = '';
+
+                if (topSales.length === 0) {
+                    topSalesContent.innerHTML = '<div class="no-top-sales">No sales data available</div>';
+                    return;
+                }
+
+                topSales.forEach((sale, index) => {
+                    const formatted = new Date(sale.date).toLocaleDateString('en-US', { 
+                        weekday: 'short',
+                        month: 'short', 
+                        day: 'numeric'
+                    });
+
+                    const card = document.createElement('div');
+                    card.className = 'top-sale-card';
+                    card.innerHTML = `
+                        <div class="top-sale-rank ${index === 0 ? 'first' : ''}">${index + 1}</div>
+                        <div class="top-sale-date">📅 ${formatted}</div>
+                        <div class="top-sale-stats">
+                            <div class="top-sale-stat">
+                                <span class="top-sale-stat-label">Transactions:</span>
+                                <span class="top-sale-stat-value">${sale.totalTransactions}</span>
+                            </div>
+                            <div class="top-sale-stat">
+                                <span class="top-sale-stat-label">Items Sold:</span>
+                                <span class="top-sale-stat-value">${sale.totalOrdered}</span>
+                            </div>
+                        </div>
+                        <div class="top-sale-revenue">₱${sale.totalSalary.toFixed(2)}</div>
+                    `;
+                    topSalesContent.appendChild(card);
+                });
             }
 
             function showOrdersForDate(date, formatted, sales) {
@@ -460,7 +684,6 @@
                 const totalOrdered = sales.reduce((sum, sale) => sum + parseInt(sale.ordered), 0);
                 const totalSalary = sales.reduce((sum, sale) => sum + parseFloat(sale.full_salary), 0);
                 const totalTransactions = sales.length;
-                const avgTransaction = totalTransactions > 0 ? totalSalary / totalTransactions : 0;
 
                 // Display summary
                 daySummary.innerHTML = `
@@ -501,11 +724,8 @@
             // Back to date list
             backToDatesBtn.addEventListener('click', () => {
                 dayOrdersSection.style.display = 'none';
-                orderDatesContainer.style.display = 'grid';
+                orderDatesContainer.style.display = 'flex';
             });
-
-            
-            });
-        
+        });
     </script>
 </x-app-layout>
