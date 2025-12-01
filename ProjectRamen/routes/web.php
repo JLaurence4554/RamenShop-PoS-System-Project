@@ -13,9 +13,10 @@ use App\Http\Controllers\InventoryController;
 use App\Models\InventoryItem;
 use App\Models\Sale;
 use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::get('/dashboard', [SaleController::class, 'index'])
@@ -102,3 +103,15 @@ if (app()->environment('local')) {
         return redirect()->intended(route('dashboard'));
     })->name('dev.impersonate');
 }
+
+// Admin Auth Routes
+Route::get('/admin/login', function() {
+    return view('admin.login');
+})->name('admin.login');
+Route::get('/admin/register', function() {
+    return view('admin.register');
+})->name('admin.register');
+Route::post('/admin/login', [App\Http\Controllers\AdminAuthController::class, 'login'])->name('admin.login.submit');
+Route::post('/admin/register', [App\Http\Controllers\AdminAuthController::class, 'register'])->name('admin.register.submit');
+
+

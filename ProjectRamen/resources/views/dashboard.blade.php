@@ -378,6 +378,7 @@
             background-color: #4B5563;
             border-radius: 8px;
             overflow: hidden;
+            table-layout: fixed;
         }
 
         #ordersTable thead {
@@ -386,16 +387,39 @@
 
         #ordersTable th {
             padding: 12px;
-            text-align: left;
+            text-align: center;
             font-weight: 600;
             color: #F9FAFB;
             border-bottom: 2px solid #60A5FA;
+            word-wrap: break-word;
+        }
+
+        #ordersTable th:first-child {
+            width: 8%;
+            text-align: center;
+        }
+
+        #ordersTable th:nth-child(2) {
+            width: 27%;
+            text-align: center;
+        }
+
+        #ordersTable th:nth-child(3) {
+            width: 30%;
+            text-align: center;
+        }
+
+        #ordersTable th:nth-child(4) {
+            width: 35%;
+            text-align: center;
         }
 
         #ordersTable td {
             padding: 12px;
             border-bottom: 1px solid #6B7280;
             color: #E5E7EB;
+            text-align: center;
+            word-wrap: break-word;
         }
 
         #ordersTable tbody tr {

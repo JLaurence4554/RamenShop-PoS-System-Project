@@ -1031,7 +1031,7 @@
             })
             .then(res => res.json())
             .then(data => {
-                alert("Order placed successfully! Inventory has been updated.");
+                alert("Order placed successfully!");
 
                 const query = new URLSearchParams({
                     orders: JSON.stringify(orders.map(item => ({

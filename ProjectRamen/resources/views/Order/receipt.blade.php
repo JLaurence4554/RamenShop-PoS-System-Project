@@ -174,11 +174,10 @@
 
     <div class="receipt-container">
         <div>
-            <div class="receipt-header">Sakura Street <br>
-                      Ramen</div>
+            <div class="receipt-header">RamenSHOP</div>
             <div class="receipt-subheader">
                 Purok-6, <br>Pandan Ligao City, Albay<br>
-                contact: 09917725231
+                contact: 09918825231
             </div>
 
             <div class="divider"></div>
